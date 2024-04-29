@@ -10,6 +10,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createEditCabin } from "../../services/apiCabins";
 import { toast } from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
+import { useCreateCabin } from "./useCreateCabin";
 // const FormRow = styled.div`
 //   display: grid;
 //   align-items: center;
@@ -55,21 +56,11 @@ function CreateCabinForm({ setShowForm, cabinToEdit = {} }) {
   });
   const { errors } = formState;
   const queryClient = useQueryClient();
-  const { isLoading, mutate: createCabin } = useMutation({
-    mutationFn: createEditCabin,
-    onSuccess: () => {
-      toast.success(`New Cabin Created Successfully..`);
-      queryClient.invalidateQueries({
-        queryKey: ["cabin"],
-      });
-      reset();
-    },
-    onError: (err) => toast.error(err.message),
-  });
+  const  { isCreateLoading, createCabin } = useCreateCabin();
 
   const { isEditLoading, mutate: editCabin } = useMutation({
     mutationFn: ({ newCabinData, id }) => {
-      console.log(id, "herererererer");
+     
       createEditCabin(newCabinData, id);
     },
     onSuccess: () => {
@@ -82,7 +73,7 @@ function CreateCabinForm({ setShowForm, cabinToEdit = {} }) {
     onError: (err) => toast.error(err.message),
   });
 
-  const isWorking = isLoading || isEditLoading;
+  const isWorking = isCreateLoading || isEditLoading;
   function onSubmit(data) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
 
@@ -184,7 +175,7 @@ function CreateCabinForm({ setShowForm, cabinToEdit = {} }) {
         >
           Cancel
         </Button>
-        <Button disabled={isLoading}>
+        <Button disabled={isCreateLoading}>
           {isEditSession ? "Edit Cabin" : "Create New Cabin"}
         </Button>
       </FormRow>

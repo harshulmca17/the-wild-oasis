@@ -31,7 +31,7 @@ export async function createEditCabin(cabin, id) {
 
   const imageName = `${Math.random()}-${cabin.image.name}`.replaceAll("/", "");
   const imagePath = hasStartswithSupabase
-    ? hasStartswithSupabase
+    ? cabin.image
     : `/storage/v1/object/public/cabin-images/` + imageName;
 
   const body = { ...cabin };
