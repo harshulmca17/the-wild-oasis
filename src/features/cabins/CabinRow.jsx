@@ -7,6 +7,8 @@ import { useState } from "react";
 import { HiSquare2Stack } from "react-icons/hi2";
 import { HiPencilAlt, HiTrash } from "react-icons/hi";
 import { useCreateCabin } from "./useCreateCabin";
+import Modal from "../../ui/Modal-v1";
+import ConfirmDelete from "../../ui/ConfirmDelete";
 const TableRow = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
@@ -76,24 +78,30 @@ export default function CabinRow({ cabin }) {
           >
             <HiSquare2Stack />
           </button>{" "}
-          <button
-            onClick={() => {
-              setShowForm((showForm) => !showForm);
-            }}
-          >
-            <HiPencilAlt />
-          </button>{" "}
-          <button
-            disabled={deleteLoading}
-            onClick={(e) => {
-              deleteCabin(id);
-            }}
-          >
-            <HiTrash />
-          </button>
+          <Modal>
+            <Modal.Open opens="edit">
+              <button>
+                <HiPencilAlt />
+              </button>
+            </Modal.Open>
+            <Modal.Window name="edit">
+              <CreateCabinForm cabinToEdit={cabin} />
+            </Modal.Window>{" "}
+            <Modal.Open opens="delete">
+              <button>
+                <HiTrash />
+              </button>
+            </Modal.Open>
+            <Modal.Window name="delete">
+              <ConfirmDelete
+                resource={"Cabin " + cabin.name}
+                disabled={deleteLoading}
+                onConfirm={() => deleteCabin(id)}
+              />
+            </Modal.Window>
+          </Modal>
         </div>
       </TableRow>
-      {showForm && <CreateCabinForm cabinToEdit={cabin} />}
     </>
   );
 }

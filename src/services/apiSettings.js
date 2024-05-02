@@ -1,27 +1,30 @@
 import supabase from "./supabase";
 
 export async function getSettings() {
-  const { data, error } = await supabase.from("settings").select("*").single();
+  const res = await fetch("http://127.0.0.1:8080/settings");
 
-  if (error) {
-    console.error(error);
+  if (!res.ok) {
     throw new Error("Settings could not be loaded");
   }
-  return data;
+  const data = await res.json();
+
+  return data.result[0];
 }
 
 // We expect a newSetting object that looks like {setting: newValue}
 export async function updateSetting(newSetting) {
-  const { data, error } = await supabase
-    .from("settings")
-    .update(newSetting)
-    // There is only ONE row of settings, and it has the ID=1, and so this is the updated one
-    .eq("id", 1)
-    .single();
+  const res = await fetch("http://127.0.0.1:8080/updateSettings", {
+    method: "POST", // HTTP request method
 
-  if (error) {
-    console.error(error);
+    headers: {
+      "Content-Type": "application/json", // Request content type
+      // Add other headers if needed, such as Authorization header
+    },
+    referrerPolicy: "no-referrer", // Referrer policy
+    body: JSON.stringify({ ...newSetting, id: 1 }), // Request payload data, converted to JSON format
+  });
+
+  if (!res.ok) {
     throw new Error("Settings could not be updated");
   }
-  return data;
 }
