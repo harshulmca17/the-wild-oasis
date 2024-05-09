@@ -9,17 +9,19 @@ import { HiPencilAlt, HiTrash } from "react-icons/hi";
 import { useCreateCabin } from "./useCreateCabin";
 import Modal from "../../ui/Modal-v1";
 import ConfirmDelete from "../../ui/ConfirmDelete";
-const TableRow = styled.div`
-  display: grid;
-  grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
-  column-gap: 2.4rem;
-  align-items: center;
-  padding: 1.4rem 2.4rem;
+import Table from "../../ui/Table";
+import Menus from "../../ui/Menus";
+// const TableRow = styled.div`
+//   display: grid;
+//   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
+//   column-gap: 2.4rem;
+//   align-items: center;
+//   padding: 1.4rem 2.4rem;
 
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--color-grey-100);
-  }
-`;
+//   &:not(:last-child) {
+//     border-bottom: 1px solid var(--color-grey-100);
+//   }
+// `;
 
 const Img = styled.img`
   display: block;
@@ -63,45 +65,40 @@ export default function CabinRow({ cabin }) {
     createCabin(cabinTemp);
   }
   return (
-    <>
-      <TableRow role="row">
-        <Img src={SUPABASE_BASE_URL + image} />
-        <Cabin>{name}</Cabin>
-        <div>Fits up to {maxCapacity} guests</div>
-        <Price>{formatCurrency(regularPrice)}</Price>
-        <Discount>{formatCurrency(discount)}</Discount>
-        <div>
-          <button
-            onClick={() => {
-              handleCopyCabin();
-            }}
-          >
-            <HiSquare2Stack />
-          </button>{" "}
-          <Modal>
-            <Modal.Open opens="edit">
-              <button>
-                <HiPencilAlt />
-              </button>
-            </Modal.Open>
-            <Modal.Window name="edit">
-              <CreateCabinForm cabinToEdit={cabin} />
-            </Modal.Window>{" "}
-            <Modal.Open opens="delete">
-              <button>
-                <HiTrash />
-              </button>
-            </Modal.Open>
-            <Modal.Window name="delete">
-              <ConfirmDelete
-                resource={"Cabin " + cabin.name}
-                disabled={deleteLoading}
-                onConfirm={() => deleteCabin(id)}
-              />
-            </Modal.Window>
-          </Modal>
-        </div>
-      </TableRow>
-    </>
+    <Table.Row>
+      <Img src={SUPABASE_BASE_URL + image} />
+      <Cabin>{name}</Cabin>
+      <div>Fits up to {maxCapacity} guests</div>
+      <Price>{formatCurrency(regularPrice)}</Price>
+      <Discount>{discount > 0 ? formatCurrency(discount) : "-NA-"}</Discount>
+      <div>
+        <Modal>
+          <Menus.Menu>
+            <Menus.Toggle id={cabin.id} />
+            <Menus.List id={cabin.id}>
+              <Menus.Button icon={<HiSquare2Stack />} onClick={handleCopyCabin}>
+                Duplicate
+              </Menus.Button>
+              <Modal.Open opens="edit">
+                <Menus.Button icon={<HiPencilAlt />}>Edit</Menus.Button>
+              </Modal.Open>
+              <Modal.Open opens="delete">
+                <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
+              </Modal.Open>
+            </Menus.List>
+          </Menus.Menu>
+          <Modal.Window name="edit">
+            <CreateCabinForm cabinToEdit={cabin} />
+          </Modal.Window>{" "}
+          <Modal.Window name="delete">
+            <ConfirmDelete
+              resource={"Cabin " + cabin.name}
+              disabled={deleteLoading}
+              onConfirm={() => deleteCabin(id)}
+            />
+          </Modal.Window>
+        </Modal>
+      </div>
+    </Table.Row>
   );
 }

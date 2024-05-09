@@ -1,19 +1,65 @@
 import { getToday } from "../utils/helpers";
 import supabase from "./supabase";
+const VITE_BACKEND_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
+const PAGE_SIZE = Number(import.meta.env.VITE_PAGINATION_PAGE_SIZE);
+export async function getBookings({ filter, sortBy, page }) {
+  if (filter !== null || sortBy !== null) {
+    let body = {};
+    console.log(filter, sortBy);
+    if (filter && sortBy) {
+      body = {
+        [filter.field]: filter.value,
+        sortField: sortBy.field,
+        sortDirection: sortBy.direction ?? "ASC",
+      };
+    } else if (sortBy) {
+      body = {
+        sortField: sortBy.field,
+        sortDirection: sortBy.direction ?? "ASC",
+      };
+    } else if (filter) {
+      body = {
+        [filter.field]: filter.value,
+      };
+    }
+    body.page = page;
+    body.pageSize = PAGE_SIZE;
+    console.log(body, "body");
+    const response = await fetch(`${VITE_BACKEND_ENDPOINT}/bookings`, {
+      method: "POST", // HTTP request method
 
-export async function getBooking(id) {
-  const { data, error } = await supabase
-    .from("bookings")
-    .select("*, cabins(*), guests(*)")
-    .eq("id", id)
-    .single();
+      headers: {
+        "Content-Type": "application/json", // Request content type
+        // Add other headers if needed, such as Authorization header
+      },
+      referrerPolicy: "no-referrer", // Referrer policy
+      // eslint-disable-next-line no-undef
+      body: JSON.stringify(body), // Request payload data, converted to JSON format
+    });
+    if (!response.ok) {
+      throw new Error("Cabins could not be loaded");
+    }
+    const newData = await response.json();
 
-  if (error) {
-    console.error(error);
-    throw new Error("Booking not found");
+    return newData?.result ?? [];
+  } else {
+    const response = await fetch(`${VITE_BACKEND_ENDPOINT}/bookings`);
+    if (!response.ok) {
+      throw new Error("Cabins could not be loaded");
+    }
+    const newData = await response.json();
+
+    return newData?.result ?? [];
   }
+}
+export async function getBooking(id) {
+  const response = await fetch(`${VITE_BACKEND_ENDPOINT}/booking/${id}`);
+  if (!response.ok) {
+    throw new Error("Cabins could not be loaded");
+  }
+  const newData = await response.json();
 
-  return data;
+  return newData?.result ?? [];
 }
 // Returns all BOOKINGS that are were created after the given date. Useful to get bookings created in the last 30 days, for example.
 export async function getBookingsAfterDate(date) {

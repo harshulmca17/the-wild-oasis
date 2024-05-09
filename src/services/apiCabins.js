@@ -1,5 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
 import supabase from "./supabase";
+const VITE_BACKEND_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 export async function getCabins() {
   const res = await fetch("http://127.0.0.1:8080/cabins");
 
@@ -13,7 +14,7 @@ export async function getCabins() {
 }
 
 export async function deleteCabins(id) {
-  const res = await fetch(`http://127.0.0.1:8080/deleteCabin/${id}`);
+  const res = await fetch(`${VITE_BACKEND_ENDPOINT}/deleteCabin/${id}`);
 
   if (!res.ok) {
     throw new Error("Cabins could not be loaded");
@@ -37,9 +38,9 @@ export async function createEditCabin(cabin, id) {
   const body = { ...cabin };
   body.image = imagePath;
 
-  let apiPath = `http://127.0.0.1:8080/pushCabins`;
+  let apiPath = `${VITE_BACKEND_ENDPOINT}/pushCabins`;
 
-  if (id) apiPath = `http://127.0.0.1:8080/updateCabin`;
+  if (id) apiPath = `${VITE_BACKEND_ENDPOINT}/updateCabin`;
 
   console.log(apiPath, id);
   const response = await fetch(apiPath, {
@@ -82,7 +83,7 @@ export async function updateCabin(cabin) {
     body.image = imagePath;
   }
 
-  const response = await fetch(`http://127.0.0.1:8080/updateCabin`, {
+  const response = await fetch(`${VITE_BACKEND_ENDPOINT}/updateCabin`, {
     method: "POST", // HTTP request method
 
     headers: {

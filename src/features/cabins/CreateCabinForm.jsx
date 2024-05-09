@@ -48,7 +48,7 @@ const Error = styled.span`
   color: var(--color-red-700);
 `;
 
-function CreateCabinForm({ setShowForm, cabinToEdit = {} }) {
+function CreateCabinForm({ onCloseModal, cabinToEdit = {} }) {
   console.log(cabinToEdit);
   const { id: editId, ...editValues } = cabinToEdit;
   const isEditSession = Boolean(editId);
@@ -83,7 +83,7 @@ function CreateCabinForm({ setShowForm, cabinToEdit = {} }) {
     if (isEditSession)
       editCabin({ newCabinData: { ...data, image, id: editId }, id: editId });
     else createCabin({ ...data, image: image });
-    setShowForm(false);
+    onCloseModal();
 
     // mutate({ ...data, image: data.image[0] }, editId);
   }
@@ -171,7 +171,7 @@ function CreateCabinForm({ setShowForm, cabinToEdit = {} }) {
           variation="secondary"
           type="reset"
           onClick={() => {
-            setShowForm(false);
+            onCloseModal()
           }}
         >
           Cancel
