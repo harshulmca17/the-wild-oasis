@@ -55,11 +55,11 @@ export async function getBookings({ filter, sortBy, page }) {
 export async function getBooking(id) {
   const response = await fetch(`${VITE_BACKEND_ENDPOINT}/booking/${id}`);
   if (!response.ok) {
-    throw new Error("Cabins could not be loaded");
+    throw new Error("Booking could not be loaded");
   }
   const newData = await response.json();
-
-  return newData?.result ?? [];
+  console.log(newData);
+  return newData?.result ?? {};
 }
 // Returns all BOOKINGS that are were created after the given date. Useful to get bookings created in the last 30 days, for example.
 export async function getBookingsAfterDate(date) {
@@ -115,28 +115,41 @@ export async function getStaysTodayActivity() {
   return data;
 }
 
-export async function updateBooking(id, obj) {
-  const { data, error } = await supabase
-    .from("bookings")
-    .update(obj)
-    .eq("id", id)
-    .select()
-    .single();
+export async function updateBooking(obj) {
+  const body = {
+    ...obj,
+    id: parseInt(obj.id),
+  };
+  console.log(body);
+  const response = await fetch(`${VITE_BACKEND_ENDPOINT}/updateBooking`, {
+    method: "POST", // HTTP request method
 
-  if (error) {
-    console.error(error);
-    throw new Error("Booking could not be updated");
+    headers: {
+      "Content-Type": "application/json", // Request content type
+      // Add other headers if needed, such as Authorization header
+    },
+    referrerPolicy: "no-referrer", // Referrer policy
+    // eslint-disable-next-line no-undef
+    body: JSON.stringify(body), // Request payload data, converted to JSON format
+  });
+  if (!response.ok) {
+    throw new Error("Booking could not be loaded");
   }
-  return data;
+  const newData = await response.json();
+
+  return newData?.result ?? {};
 }
 
 export async function deleteBooking(id) {
   // REMEMBER RLS POLICIES
-  const { data, error } = await supabase.from("bookings").delete().eq("id", id);
 
-  if (error) {
-    console.error(error);
-    throw new Error("Booking could not be deleted");
+  const res = await fetch(`${VITE_BACKEND_ENDPOINT}/deleteBooking/${id}`);
+
+  if (!res.ok) {
+    throw new Error("Booking could not be loaded");
   }
-  return data;
+
+  const data = await res.json();
+
+  return data?.result ?? {};
 }
