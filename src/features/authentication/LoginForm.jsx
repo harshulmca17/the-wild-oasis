@@ -2,13 +2,21 @@ import { useState } from "react";
 import Button from "../../ui/Button";
 import Form from "../../ui/Form";
 import Input from "../../ui/Input";
+import SpinnerMini from "../../ui/SpinnerMini";
 import FormRowVertical from "../../ui/FormRowVertical";
+import { login } from "../../services/apiAuth";
+import { useLogin } from "./useLogin";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  function handleSubmit() {}
+  const { isLoginProcess, loginApi } = useLogin();
+  function handleSubmit(e) {
+    e.preventDefault();
+  
+    if (email && password) loginApi({ email, password });
+    else return;
+  }
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -32,7 +40,9 @@ function LoginForm() {
         />
       </FormRowVertical>
       <FormRowVertical>
-        <Button size="large">Login</Button>
+        <Button size="large" disabled={isLoginProcess}>
+          {!isLoginProcess ? "Login" : <SpinnerMini />}
+        </Button>
       </FormRowVertical>
     </Form>
   );
