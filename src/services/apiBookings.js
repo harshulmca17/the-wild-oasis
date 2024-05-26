@@ -62,57 +62,64 @@ export async function getBooking(id) {
   return newData?.result ?? {};
 }
 // Returns all BOOKINGS that are were created after the given date. Useful to get bookings created in the last 30 days, for example.
-export async function getBookingsAfterDate(date) {
-  const { data, error } = await supabase
-    .from("bookings")
-    .select("created_at, totalPrice, extrasPrice")
-    .gte("created_at", date)
-    .lte("created_at", getToday({ end: true }));
+export async function getBookingsAfterDate( daysGap ) {
+  let body = {};
 
-  if (error) {
-    console.error(error);
-    throw new Error("Bookings could not get loaded");
+  body.daysGap = parseInt(daysGap);
+  body.type = "bookings";
+
+  const response = await fetch(`${VITE_BACKEND_ENDPOINT}/bookingsAfterDate`, {
+    method: "POST", // HTTP request method
+
+    headers: {
+      "Content-Type": "application/json", // Request content type
+    },
+    referrerPolicy: "no-referrer", // Referrer policy
+
+    body: JSON.stringify(body), // Request payload data, converted to JSON format
+  });
+  if (!response.ok) {
+    throw new Error("Bookings could not be loaded");
   }
+  const newData = await response.json();
 
-  return data;
+  return newData?.result?.bookings ?? [];
 }
 
 // Returns all STAYS that are were created after the given date
-export async function getStaysAfterDate(date) {
-  const { data, error } = await supabase
-    .from("bookings")
-    // .select('*')
-    .select("*, guests(fullName)")
-    .gte("startDate", date)
-    .lte("startDate", getToday());
+export async function getStaysAfterDate( daysGap ) {
+  let body = {};
 
-  if (error) {
-    console.error(error);
-    throw new Error("Bookings could not get loaded");
+  body.daysGap = parseInt(daysGap);
+  body.type = "stays";
+
+  const response = await fetch(`${VITE_BACKEND_ENDPOINT}/bookingsAfterDate`, {
+    method: "POST", // HTTP request method
+
+    headers: {
+      "Content-Type": "application/json", // Request content type
+    },
+    referrerPolicy: "no-referrer", // Referrer policy
+
+    body: JSON.stringify(body), // Request payload data, converted to JSON format
+  });
+  if (!response.ok) {
+    throw new Error("Stays could not be loaded");
   }
+  const newData = await response.json();
 
-  return data;
+  return newData?.result?.stays ?? [];
 }
 
 // Activity means that there is a check in or a check out today
 export async function getStaysTodayActivity() {
-  const { data, error } = await supabase
-    .from("bookings")
-    .select("*, guests(fullName, nationality, countryFlag)")
-    .or(
-      `and(status.eq.unconfirmed,startDate.eq.${getToday()}),and(status.eq.checked-in,endDate.eq.${getToday()})`
-    )
-    .order("created_at");
-
-  // Equivalent to this. But by querying this, we only download the data we actually need, otherwise we would need ALL bookings ever created
-  // (stay.status === 'unconfirmed' && isToday(new Date(stay.startDate))) ||
-  // (stay.status === 'checked-in' && isToday(new Date(stay.endDate)))
-
-  if (error) {
-    console.error(error);
-    throw new Error("Bookings could not get loaded");
+  const response = await fetch(`${VITE_BACKEND_ENDPOINT}/getStaysTodayActivity`);
+  if (!response.ok) {
+    throw new Error("Booking could not be loaded");
   }
-  return data;
+  const newData = await response.json();
+  console.log(newData);
+  return newData?.result ?? {};
 }
 
 export async function updateBooking(obj) {
