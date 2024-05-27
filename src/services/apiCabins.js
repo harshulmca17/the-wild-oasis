@@ -2,7 +2,7 @@
 import supabase from "./supabase";
 const VITE_BACKEND_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 export async function getCabins() {
-  const res = await fetch("http://127.0.0.1:8080/cabins");
+  const res = await fetch(`${VITE_BACKEND_ENDPOINT}/cabins`);
 
   if (!res.ok) {
     throw new Error("Cabins could not be loaded");

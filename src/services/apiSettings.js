@@ -1,7 +1,7 @@
 import supabase from "./supabase";
-
+const VITE_BACKEND_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT;
 export async function getSettings() {
-  const res = await fetch("http://127.0.0.1:8080/settings");
+  const res = await fetch(`${VITE_BACKEND_ENDPOINT}/settings`);
 
   if (!res.ok) {
     throw new Error("Settings could not be loaded");
@@ -13,7 +13,7 @@ export async function getSettings() {
 
 // We expect a newSetting object that looks like {setting: newValue}
 export async function updateSetting(newSetting) {
-  const res = await fetch("http://127.0.0.1:8080/updateSettings", {
+  const res = await fetch(`${VITE_BACKEND_ENDPOINT}/updateSettings`, {
     method: "POST", // HTTP request method
 
     headers: {
