@@ -18,7 +18,7 @@ const StyledDashboardLayout = styled.div`
 `;
 
 export default function DashboardLayout() {
-  const { bookings, isLoading: isLoadingBookings } = useRecentBookings();
+  const { confirmedStaysbookings, isLoading: isLoadingBookings } = useRecentBookings();
   const {
     stays,
     confirmedStays,
@@ -39,14 +39,14 @@ export default function DashboardLayout() {
   return (
     <StyledDashboardLayout>
       <Stats
-        bookings={bookings}
+        bookings={confirmedStays}
         confirmedStays={confirmedStays}
         numDays={numDays}
         cabinsCount={finalCabins.length}
       />
       <Today />
       <DurationChart confirmedStays={confirmedStays} />
-      <SalesChart bookings={bookings} numDays={numDays} />
+      <SalesChart bookings={confirmedStays} numDays={numDays} />
     </StyledDashboardLayout>
   );
 }

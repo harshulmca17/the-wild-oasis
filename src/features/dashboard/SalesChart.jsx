@@ -29,8 +29,6 @@ const StyledSalesChart = styled(DashboardBox)`
   }
 `;
 
-
-
 export default function SalesChart({ bookings, numDays }) {
   const { darkMode, toggleDarkMode } = useDarkMode();
   const allDatesStructure = eachDayOfInterval({
@@ -72,10 +70,13 @@ export default function SalesChart({ bookings, numDays }) {
         text: "#374151",
         background: "#fff",
       };
-  
+
   return (
     <StyledSalesChart>
-      <Heading as="h2">Sales from {format(allDatesStructure.at(0),"MMM dd")} &mdash;{""} {format(allDatesStructure.at(-1),"MMM dd")}</Heading>
+      <Heading as="h2">
+        Sales from {format(allDatesStructure.at(0), "MMM dd")} &mdash;{""}{" "}
+        {format(allDatesStructure.at(-1), "MMM dd")}
+      </Heading>
       <ResponsiveContainer height={300} width="100%">
         <AreaChart data={data}>
           <XAxis
