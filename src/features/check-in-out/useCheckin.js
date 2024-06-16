@@ -17,8 +17,8 @@ export default function useCheckin() {
         delete bookingObject.startDate;
         
         return updateBooking({
-          ...updateBooking,
-          id: parseInt(updateBooking.id),
+          ...bookingObject,
+          id: parseInt(bookingObject.id),
           status: "checked-in",
           isPaid: true,
         })},
